@@ -25,7 +25,15 @@ SECRET_KEY = 'django-insecure-0=&y*z3o-nax7_!ye#p=5ksip=a8&)5ecc53^!kh#3nw74rpfm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+import os
+from decouple import config
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "dcf-racker-4.onrender.com",  # your Render app domain
+]
+
 
 
 # Application definition
