@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django stuff
+/media/
+staticfiles/
+*.log
+
+# SQLite DB (not needed for MySQL, but just in case)
+*.sqlite3
+db.sqlite3
+
+# Environment variables
+.env
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp

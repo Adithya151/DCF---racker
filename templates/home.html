@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home - Digital Carbon Footprint Tracker{% endblock %}
+
+{% block content %}
+<style>
+    /* Add delays for staggered animations */
+    .delay-200 { transition-delay: 200ms; }
+    .delay-400 { transition-delay: 400ms; }
+    .delay-600 { transition-delay: 600ms; }
+
+    /* The dark overlay for the hero section video */
+    #hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Semi-transparent black. Adjust opacity (0.5) as needed to ensure text is readable. */
+        background-color: rgba(10, 20, 30, 0.6); 
+        z-index: 5; /* Sits between the video (z-0) and the canvas/text */
+    }
+</style>
+
+<!-- HERO SECTION -->
+<div id="hero-section" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+    <!-- Background Video (Bottom Layer) -->
+    <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
+        <!-- Make sure this path is correct for your project structure -->
+        <source src="{% static 'videos/your-video-file.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Particle Animation Canvas (Sits on top of the overlay) -->
+    <canvas id="particle-canvas" class="absolute top-0 left-0 w-full h-full z-[8]"></canvas>
+
+    <!-- Text and CTA Content (Top Layer) -->
+    <section class="relative z-10 flex flex-col justify-center items-center text-center p-6">
+        <h1 class="text-4xl md:text-7xl font-extrabold mb-6 gradient-text scroll-reveal">
+            Unlock Your Digital Eco-Impact
+        </h1>
+        <p class="text-gray-300 text-lg max-w-3xl mb-10 scroll-reveal delay-200">
+            Gain clarity on your digital carbon footprint. Connect your accounts, visualize your impact, and take meaningful action towards a sustainable digital life.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 scroll-reveal delay-400">
+            <a href="{% url 'signup' %}" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-transform shadow-lg">
+                Get Started for Free
+            </a>
+            <a href="#features" class="w-full sm:w-auto bg-transparent border-2 border-slate-500 hover:bg-slate-700 hover:border-slate-700 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-all">
+                Learn More
+            </a>
+        </div>
+    </section>
+</div>
+
+<!-- TRUST/STATS BAR -->
+<section class="bg-slate-800 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="scroll-reveal">
+                <p class="text-4xl font-extrabold text-emerald-400">10,000+</p>
+                <p class="text-slate-400 mt-2">Users Tracking</p>
+            </div>
+            <div class="scroll-reveal delay-200">
+                <p class="text-4xl font-extrabold text-emerald-400">3</p>
+                <p class="text-slate-400 mt-2">Secure Integrations</p>
+            </div>
+            <div class="scroll-reveal delay-400">
+                <p class="text-4xl font-extrabold text-emerald-400">25%</p>
+                <p class="text-slate-400 mt-2">Avg. Footprint Reduction</p>
+            </div>
+            <div class="scroll-reveal delay-600">
+                <p class="text-4xl font-extrabold text-emerald-400">1M+</p>
+                <p class="text-slate-400 mt-2">Data Points Analyzed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section id="features" class="py-24 bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+        
+        <!-- Feature 1: Image Left, Text Right -->
+        <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
+            <div>
+                <img src="{% static 'images/automated-tracking.jpg' %}" alt="Abstract network visualization representing data integration" class="rounded-xl shadow-lg aspect-video object-cover">
+            </div>
+            <div>
+                <span class="text-emerald-400 font-semibold">Effortless Tracking</span>
+                <h3 class="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">Automated Tracking</h3>
+                <p class="text-slate-400 text-lg">Securely connect your Gmail, Google Drive, and GitHub accounts in minutes. Our system works in the background to automatically fetch and analyze the data needed to calculate your digital carbon footprint without any manual entry.</p>
+            </div>
+        </div>
+
+        <!-- Feature 2: Text Left, Image Right -->
+        <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
+            <div class="md:order-last">
+                <img src="https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=2106&auto=format&fit=crop" alt="A developer looking at a clean, dark-themed dashboard on a computer screen" class="rounded-xl shadow-lg aspect-video object-cover">
+            </div>
+            <div>
+                <span class="text-blue-400 font-semibold">Clarity at a Glance</span>
+                <h3 class="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">Visual Dashboard</h3>
+                <p class="text-slate-400 text-lg">Don't get lost in numbers. Our intuitive dashboard transforms complex data into beautiful, easy-to-read charts. See your footprint broken down by source, track your progress over time, and identify your biggest impact areas.</p>
+            </div>
+        </div>
+
+        <!-- Feature 3: Image Left, Text Right -->
+        <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
+            <div>
+                <img src="{% static 'images/make_an_impact.png' %}" alt="Hand holding a lightbulb with a small plant growing inside, symbolizing sustainable innovation" class="rounded-xl shadow-lg aspect-video object-cover">
+            </div>
+            <div>
+                <span class="text-purple-400 font-semibold">Make an Impact</span>
+                <h3 class="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">Actionable Insights</h3>
+                <p class="text-slate-400 text-lg">Knowledge is power. We provide personalized tips and clear recommendations based on your specific usage patterns. Learn simple ways to clean up your digital life, from managing old emails to optimizing cloud storage, and watch your footprint shrink.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- HOW IT WORKS SECTION -->
+<section id="how-it-works" class="py-24 bg-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-extrabold text-white scroll-reveal">Get Started in 3 Simple Steps</h2>
+        <div class="mt-16 max-w-4xl mx-auto grid gap-12 md:grid-cols-3">
+            <!-- Step 1 -->
+            <div class="scroll-reveal">
+                <div class="text-5xl font-bold text-emerald-400 mb-4">1.</div>
+                <h3 class="text-2xl font-bold text-white mb-2">Create Account</h3>
+                <p class="text-slate-400">Sign up for free in less than a minute. No credit card required.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="scroll-reveal delay-200">
+                <div class="text-5xl font-bold text-emerald-400 mb-4">2.</div>
+                <h3 class="text-2xl font-bold text-white mb-2">Connect Apps</h3>
+                <p class="text-slate-400">Authorize your accounts with our secure, encrypted connections.</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="scroll-reveal delay-400">
+                <div class="text-5xl font-bold text-emerald-400 mb-4">3.</div>
+                <h3 class="text-2xl font-bold text-white mb-2">Visualize & Reduce</h3>
+                <p class="text-slate-400">Watch your dashboard populate and start making an impact.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- FINAL CTA SECTION -->
+<section class="py-24 bg-gradient-to-r from-emerald-500 to-teal-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-extrabold text-white scroll-reveal">Ready to Make a Difference?</h2>
+        <p class="mt-4 text-lg text-emerald-100 max-w-3xl mx-auto scroll-reveal">Join thousands of users on a journey to a more sustainable digital life. Your first step starts now.</p>
+        <div class="mt-8 scroll-reveal">
+            <a href="{% url 'signup' %}" class="bg-white text-emerald-600 hover:bg-slate-100 px-8 py-4 rounded-lg font-semibold text-lg transform hover:scale-105 transition-transform shadow-lg">
+                Sign Up for Free
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // This script can be moved to a static JS file for better organization.
+    // It now correctly finds the <canvas> element in the hero section.
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return; // Safety check
+
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let canvasWidth, canvasHeight;
+
+        const resizeCanvas = () => {
+            canvasWidth = canvas.width = window.innerWidth;
+            canvasHeight = canvas.height = canvas.parentElement.offsetHeight;
+        };
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvasWidth;
+                this.y = Math.random() * canvasHeight;
+                this.size = Math.random() * 1.5 + 1;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.color = 'rgba(16, 185, 129, 0.5)'; // Emerald-like color
+            }
+            update() {
+                if (this.x > canvasWidth || this.x < 0) this.speedX *= -1;
+                if (this.y > canvasHeight || this.y < 0) this.speedY *= -1;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const initParticles = () => {
+            particles = [];
+            let numberOfParticles = (canvasWidth * canvasHeight) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        };
+
+        const animate = () => {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animate);
+        };
+        
+        resizeCanvas();
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+    });
+</script>
+{% endblock %}
