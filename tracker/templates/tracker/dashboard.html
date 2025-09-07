@@ -4,40 +4,45 @@
 
 {% block content %}
 <style>
-    /* Add delays for staggered scroll animations */
     .delay-150 { transition-delay: 150ms; }
     .delay-300 { transition-delay: 300ms; }
 </style>
 
 <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 
-    <!-- Header: Welcome Message & Main Action Button -->
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
         <div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-white scroll-reveal">
                 Welcome back, <span class="gradient-text">{{ user.username|default:'User' }}</span>!
             </h1>
             <p class="text-slate-400 mt-1 scroll-reveal">Here's your digital carbon footprint summary.</p>
         </div>
-        <a href="{% url 'log_activity' %}" 
-           class="mt-4 sm:mt-0 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-3 rounded-lg flex items-center space-x-2 transform hover:scale-105 transition-transform duration-300 scroll-reveal">
-           <i class="fas fa-plus"></i>
-           <span>Log New Activity</span>
-        </a>
-
-        <a href="?reset=1"
-               class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-3 rounded-lg">
-               Reset Dashboard
-        </a>
+        <div class="flex space-x-2 mt-4 sm:mt-0">
+            <a href="{% url 'log_activity' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-3 rounded-lg flex items-center space-x-2 transition-transform transform hover:scale-105">
+                <i class="fas fa-plus"></i> Log New Activity
+            </a>
+            <a href="{% url 'reset_dashboard' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                🔄 Reset Dashboard
+            </a>
+        </div>
     </header>
 
-    <!-- Stat Cards Grid -->
+    <!-- Period Buttons -->
+    <div class="flex justify-end space-x-2 mb-4">
+    <a href="?period=week" class="px-4 py-2 rounded-lg font-semibold {% if period == "week" %}bg-emerald-500 text-white{% else %}bg-slate-700 text-slate-300{% endif %}">Week</a>
+    <a href="?period=month" class="px-4 py-2 rounded-lg font-semibold {% if period == "month" %}bg-emerald-500 text-white{% else %}bg-slate-700 text-slate-300{% endif %}">Month</a>
+    <a href="?period=all" class="px-4 py-2 rounded-lg font-semibold {% if period == "all" %}bg-emerald-500 text-white{% else %}bg-slate-700 text-slate-300{% endif %}">All Time</a>
+</div>
+
+
+    <!-- Stat Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Card 1: Total Weekly CO2 -->
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 transform hover:-translate-y-2 transition-transform duration-300 scroll-reveal">
+        <!-- CO2 Card -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:-translate-y-2 transition-transform">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-slate-400 uppercase">Weekly CO₂ Emissions</p>
+                    <p class="text-sm font-medium text-slate-400 uppercase">CO₂ Emissions ({{ period|title }})</p>
                     <p class="text-4xl font-bold text-red-400 mt-2">{{ total_co2|default:"0.00" }} kg</p>
                 </div>
                 <div class="bg-emerald-500/10 text-emerald-400 text-2xl p-4 rounded-lg">
@@ -46,11 +51,11 @@
             </div>
         </div>
 
-        <!-- Card 2: Emails Sent -->
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 transform hover:-translate-y-2 transition-transform duration-300 scroll-reveal delay-150">
+        <!-- Emails Card -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:-translate-y-2 transition-transform delay-150">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-slate-400 uppercase">Emails Sent (7 Days)</p>
+                    <p class="text-sm font-medium text-slate-400 uppercase">Emails Sent ({{ period|title }})</p>
                     <p class="text-4xl font-bold text-white mt-2">{{ total_emails|default:"0" }}</p>
                 </div>
                 <div class="bg-blue-500/10 text-blue-400 text-2xl p-4 rounded-lg">
@@ -59,13 +64,21 @@
             </div>
         </div>
 
-        <!-- Card 3: Top Emission Source -->
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 transform hover:-translate-y-2 transition-transform duration-300 scroll-reveal delay-300">
+        <!-- Top Emission Source Card -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:-translate-y-2 transition-transform delay-300">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-sm font-medium text-slate-400 uppercase">Top Emission Source</p>
-                    <p class="text-4xl font-bold text-white mt-2">Drive Storage</p>
-                    <p class="text-4xl font-bold text-white mt-2">{{ total_drive|default:"0" }} GB</p>
+                    {% if total_drive >= total_emails and total_drive >= total_commits %}
+                        <p class="text-4xl font-bold text-white mt-2">Drive Storage</p>
+                        <p class="text-4xl font-bold text-white mt-2">{{ total_drive|default:"0" }} GB</p>
+                    {% elif total_emails >= total_drive and total_emails >= total_commits %}
+                        <p class="text-4xl font-bold text-white mt-2">Emails Sent</p>
+                        <p class="text-4xl font-bold text-white mt-2">{{ total_emails|default:"0" }}</p>
+                    {% else %}
+                        <p class="text-4xl font-bold text-white mt-2">GitHub Commits</p>
+                        <p class="text-4xl font-bold text-white mt-2">{{ total_commits|default:"0" }}</p>
+                    {% endif %}
                 </div>
                 <div class="bg-purple-500/10 text-purple-400 text-2xl p-4 rounded-lg">
                     <i class="fab fa-google-drive"></i>
@@ -73,17 +86,17 @@
             </div>
         </div>
     </div>
-    
-    <!-- Main Content Area -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Chart Section -->
-        <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700 scroll-reveal">
-    <h2 class="text-xl font-bold text-white mb-4">Emission Trends (Last 30 Days)</h2>
-    <canvas id="emissionChart" class="h-80"></canvas>
-</div>
 
-        <!-- Recent Activity Section -->
-        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 scroll-reveal delay-150">
+    <!-- Chart & Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Chart -->
+        <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h2 class="text-xl font-bold text-white mb-4">Emission Trends ({{ period|title }})</h2>
+            <canvas id="emissionChart" class="h-80"></canvas>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
             <h2 class="text-xl font-bold text-white mb-4">Recent Activity</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
                 {% for log in logs %}
@@ -93,9 +106,7 @@
                     </div>
                     <div>
                         <p class="font-semibold text-white">{{ log.date }}</p>
-                        <p class="text-xs text-slate-400">
-                            {{ log.emails_sent }} emails, {{ log.drive_storage_gb }} GB Drive, {{ log.github_commits }} commits
-                        </p>
+                        <p class="text-xs text-slate-400">{{ log.emails_sent }} emails, {{ log.drive_storage_gb }} GB Drive, {{ log.github_commits }} commits</p>
                     </div>
                 </div>
                 {% empty %}
@@ -131,9 +142,7 @@
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { labels: { color: 'white' } }
-            },
+            plugins: { legend: { labels: { color: 'white' } } },
             scales: {
                 x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
                 y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
