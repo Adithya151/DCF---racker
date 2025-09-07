@@ -18,9 +18,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        /* Semi-transparent black. Adjust opacity (0.5) as needed to ensure text is readable. */
         background-color: rgba(10, 20, 30, 0.6); 
-        z-index: 5; /* Sits between the video (z-0) and the canvas/text */
+        z-index: 5;
     }
 </style>
 
@@ -29,12 +28,11 @@
 
     <!-- Background Video (Bottom Layer) -->
     <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
-        <!-- Make sure this path is correct for your project structure -->
         <source src="{% static 'videos/your-video-file.mp4' %}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
-    <!-- Particle Animation Canvas (Sits on top of the overlay) -->
+    <!-- Particle Animation Canvas -->
     <canvas id="particle-canvas" class="absolute top-0 left-0 w-full h-full z-[8]"></canvas>
 
     <!-- Text and CTA Content (Top Layer) -->
@@ -46,9 +44,22 @@
             Gain clarity on your digital carbon footprint. Connect your accounts, visualize your impact, and take meaningful action towards a sustainable digital life.
         </p>
         <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 scroll-reveal delay-400">
-            <a href="{% url 'signup' %}" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-transform shadow-lg">
+            
+            {% if user.is_authenticated %}
+            <!-- Authenticated user: set session and go to dashboard -->
+            <form method="post" action="{% url 'set_dashboard_flag' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-transform shadow-lg">
+                    Get Started for Free
+                </button>
+            </form>
+            {% else %}
+            <!-- Not logged in: redirect to login first -->
+            <a href="{% url 'login' %}?next={% url 'home' %}" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-transform shadow-lg">
                 Get Started for Free
             </a>
+            {% endif %}
+
             <a href="#features" class="w-full sm:w-auto bg-transparent border-2 border-slate-500 hover:bg-slate-700 hover:border-slate-700 px-8 py-4 rounded-lg text-white font-semibold text-lg transform hover:scale-105 transition-all">
                 Learn More
             </a>
@@ -87,7 +98,7 @@
         <!-- Feature 1: Image Left, Text Right -->
         <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
             <div>
-                <img src="{% static 'images/automated-tracking.jpg' %}" alt="Abstract network visualization representing data integration" class="rounded-xl shadow-lg aspect-video object-cover">
+                <img src="{% static 'images/automated-tracking.jpg' %}" alt="Automated tracking" class="rounded-xl shadow-lg aspect-video object-cover">
             </div>
             <div>
                 <span class="text-emerald-400 font-semibold">Effortless Tracking</span>
@@ -99,7 +110,7 @@
         <!-- Feature 2: Text Left, Image Right -->
         <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
             <div class="md:order-last">
-                <img src="https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=2106&auto=format&fit=crop" alt="A developer looking at a clean, dark-themed dashboard on a computer screen" class="rounded-xl shadow-lg aspect-video object-cover">
+                <img src="https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=2106&auto=format&fit=crop" alt="Dashboard view" class="rounded-xl shadow-lg aspect-video object-cover">
             </div>
             <div>
                 <span class="text-blue-400 font-semibold">Clarity at a Glance</span>
@@ -111,7 +122,7 @@
         <!-- Feature 3: Image Left, Text Right -->
         <div class="grid md:grid-cols-2 gap-12 items-center scroll-reveal">
             <div>
-                <img src="{% static 'images/make_an_impact.png' %}" alt="Hand holding a lightbulb with a small plant growing inside, symbolizing sustainable innovation" class="rounded-xl shadow-lg aspect-video object-cover">
+                <img src="{% static 'images/make_an_impact.png' %}" alt="Sustainable innovation" class="rounded-xl shadow-lg aspect-video object-cover">
             </div>
             <div>
                 <span class="text-purple-400 font-semibold">Make an Impact</span>
@@ -128,19 +139,16 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-4xl font-extrabold text-white scroll-reveal">Get Started in 3 Simple Steps</h2>
         <div class="mt-16 max-w-4xl mx-auto grid gap-12 md:grid-cols-3">
-            <!-- Step 1 -->
             <div class="scroll-reveal">
                 <div class="text-5xl font-bold text-emerald-400 mb-4">1.</div>
                 <h3 class="text-2xl font-bold text-white mb-2">Create Account</h3>
                 <p class="text-slate-400">Sign up for free in less than a minute. No credit card required.</p>
             </div>
-            <!-- Step 2 -->
             <div class="scroll-reveal delay-200">
                 <div class="text-5xl font-bold text-emerald-400 mb-4">2.</div>
                 <h3 class="text-2xl font-bold text-white mb-2">Connect Apps</h3>
                 <p class="text-slate-400">Authorize your accounts with our secure, encrypted connections.</p>
             </div>
-            <!-- Step 3 -->
             <div class="scroll-reveal delay-400">
                 <div class="text-5xl font-bold text-emerald-400 mb-4">3.</div>
                 <h3 class="text-2xl font-bold text-white mb-2">Visualize & Reduce</h3>
@@ -149,7 +157,6 @@
         </div>
     </div>
 </section>
-
 
 <!-- FINAL CTA SECTION -->
 <section class="py-24 bg-gradient-to-r from-emerald-500 to-teal-500">
@@ -165,69 +172,64 @@
 </section>
 
 <script>
-    // This script can be moved to a static JS file for better organization.
-    // It now correctly finds the <canvas> element in the hero section.
-    document.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('particle-canvas');
-        if (!canvas) return; // Safety check
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let canvasWidth, canvasHeight;
 
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let canvasWidth, canvasHeight;
+    const resizeCanvas = () => {
+        canvasWidth = canvas.width = window.innerWidth;
+        canvasHeight = canvas.height = canvas.parentElement.offsetHeight;
+    };
 
-        const resizeCanvas = () => {
-            canvasWidth = canvas.width = window.innerWidth;
-            canvasHeight = canvas.height = canvas.parentElement.offsetHeight;
-        };
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvasWidth;
-                this.y = Math.random() * canvasHeight;
-                this.size = Math.random() * 1.5 + 1;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * 0.4 - 0.2;
-                this.color = 'rgba(16, 185, 129, 0.5)'; // Emerald-like color
-            }
-            update() {
-                if (this.x > canvasWidth || this.x < 0) this.speedX *= -1;
-                if (this.y > canvasHeight || this.y < 0) this.speedY *= -1;
-                this.x += this.speedX;
-                this.y += this.speedY;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvasWidth;
+            this.y = Math.random() * canvasHeight;
+            this.size = Math.random() * 1.5 + 1;
+            this.speedX = Math.random() * 0.4 - 0.2;
+            this.speedY = Math.random() * 0.4 - 0.2;
+            this.color = 'rgba(16, 185, 129, 0.5)';
         }
+        update() {
+            if (this.x > canvasWidth || this.x < 0) this.speedX *= -1;
+            if (this.y > canvasHeight || this.y < 0) this.speedY *= -1;
+            this.x += this.speedX;
+            this.y += this.speedY;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
 
-        const initParticles = () => {
-            particles = [];
-            let numberOfParticles = (canvasWidth * canvasHeight) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                particles.push(new Particle());
-            }
-        };
+    const initParticles = () => {
+        particles = [];
+        let numberOfParticles = (canvasWidth * canvasHeight) / 9000;
+        for (let i = 0; i < numberOfParticles; i++) {
+            particles.push(new Particle());
+        }
+    };
 
-        const animate = () => {
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-            requestAnimationFrame(animate);
-        };
-        
+    const animate = () => {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    };
+
+    resizeCanvas();
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', () => {
         resizeCanvas();
         initParticles();
-        animate();
-
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initParticles();
-        });
     });
+});
 </script>
+
 {% endblock %}

@@ -4,11 +4,15 @@ from .forms import ActivityLogForm
 from .models import ActivityLog
 from django.utils import timezone
 from datetime import timedelta
+from django.views.decorators.cache import never_cache
 def home(request):
     return render(request,'home.html')
 
-@login_required
+@login_required(login_url='login')
+@never_cache
 def dashboard(request):
+    if not request.session.get('can_visit_dashboard'):
+        return redirect('home')
     today = timezone.now().date()
     period = request.GET.get("period", "week")  # default to 'week'
 
@@ -89,3 +93,10 @@ def reset_dashboard(request):
         # Delete all ActivityLog entries for this user
         ActivityLog.objects.filter(user=request.user).delete()
     return redirect('dashboard')
+
+
+@login_required
+def set_dashboard_flag(request):
+    request.session['can_visit_dashboard'] = True
+    return redirect('dashboard')
+

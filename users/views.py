@@ -25,7 +25,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            next_url = request.GET.get('next')
+            #return redirect('dashboard')
+            if next_url:
+                return redirect(next_url)
+            return redirect('home')  # default after login
         else:
             messages.error(request, "Invalid username or password")
     return render(request, "users/login.html")
@@ -94,3 +98,4 @@ def reset_password(request):
         return redirect("login")
 
     return render(request, "users/reset_password.html")
+

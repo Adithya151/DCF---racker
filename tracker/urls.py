@@ -8,4 +8,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('log/', views.log_activity, name="log_activity"),
     path('reset/', views.reset_dashboard, name='reset_dashboard'),
+    
+    path('set_dashboard_flag/', views.set_dashboard_flag, name='set_dashboard_flag'),
 ]
