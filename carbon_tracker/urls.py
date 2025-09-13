@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from tracker.views import chatbot
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('tracker.urls')),  # Include URLs from the tracker app
     path('users/', include('users.urls')),
+    path("chatbot/",chatbot, name="chatbot")
 ]

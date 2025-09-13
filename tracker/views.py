@@ -5,6 +5,14 @@ from .models import ActivityLog
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.cache import never_cache
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+
+#Machine learning model code
+import numpy as np
+from sklearn.linear_model import LinearRegression
 def home(request):
     return render(request,'home.html')
 
@@ -60,6 +68,33 @@ def dashboard(request):
         chart_labels.append(log.date.strftime("%Y-%m-%d"))
         chart_data.append(round(cumulative_co2, 2))
 
+    # ==============================
+    # 🔹 AI: Predict next week's CO₂
+    # ==============================
+    prediction = None
+    if len(chart_data) >= 3:  # need at least 3 data points
+        X = np.arange(len(chart_data)).reshape(-1, 1)
+        y = np.array(chart_data)
+
+        model = LinearRegression()
+        model.fit(X, y)
+
+        next_index = len(chart_data) + 7  # predict 7 days later
+        prediction = round(float(model.predict([[next_index]])[0]), 2)
+
+    # ==============================
+    # 🔹 Suggestions (rule-based)
+    # ==============================
+    suggestions = []
+    if total_drive > (0.6 * total_co2):  # if >60% from storage
+        suggestions.append("📦 Reduce cloud storage usage, as it contributes most to your CO₂ footprint.")
+    if total_emails > 100:  # arbitrary threshold
+        suggestions.append("📧 Consider deleting old emails and reducing unnecessary emails.")
+    if total_commits > 200:
+        suggestions.append("💻 Optimize commits or batch updates to reduce emissions from GitHub activity.")
+    if not suggestions:
+        suggestions.append("✅ Great job! Your digital carbon footprint is under control.")
+
     return render(request, "tracker/dashboard.html", {
         "logs": logs_period,
         "total_co2": round(total_co2, 2),
@@ -69,8 +104,9 @@ def dashboard(request):
         "chart_labels": chart_labels,
         "chart_data": chart_data,
         "period": period,
+        "prediction": prediction,
+        "suggestions": suggestions,
     })
-
     
     
 @login_required
@@ -100,3 +136,45 @@ def set_dashboard_flag(request):
     request.session['can_visit_dashboard'] = True
     return redirect('dashboard')
 
+
+@csrf_exempt
+def chatbot(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user_message = data.get("message", "").lower().strip()
+
+        responses = []  # collect all matches
+
+        # Greetings
+        greetings = ["hi", "hello", "hey", "yo", "hii", "good morning", "good evening"]
+        if any(word in user_message for word in greetings):
+            responses.append("Hello 👋! I'm your CO₂ tracker assistant. How can I help you today?")
+
+        # Polite
+        if any(word in user_message for word in ["thanks", "thank you", "thx", "ty", "cheers"]):
+            responses.append("You're welcome 💚! Glad I could help.")
+
+        # Small talk
+        if "who are you" in user_message or "what are you" in user_message:
+            responses.append("I'm your CO₂ assistant 🌱. I help you understand and reduce your digital carbon footprint.")
+        if "how are you" in user_message:
+            responses.append("I'm doing great, thanks for asking! 🌟 How about you?")
+        if "bye" in user_message or "good night" in user_message:
+            responses.append("Goodbye 👋, take care of your carbon footprint! 🌍")
+
+        # CO₂ / Environment
+        if any(word in user_message for word in ["co2", "carbon", "pollution", "emission", "footprint"]):
+            responses.append("Every email, file, or commit adds to your digital CO₂ footprint. I can help you track and reduce it.")
+        if any(word in user_message for word in ["reduce", "save", "cut", "lower", "control"]):
+            responses.append("You can reduce CO₂ 🌱 by deleting unused emails, cleaning up files, and committing efficiently.")
+        if "dashboard" in user_message or "show data" in user_message:
+            responses.append("Your dashboard 📊 shows total CO₂ emissions, top sources, and activities.")
+
+        # Fallback if nothing matched
+        if not responses:
+            responses.append("Hmm 🤔 I didn’t get that. Try asking about CO₂, emissions, reducing impact, or your dashboard.")
+
+        # Join multiple replies if needed
+        reply = " ".join(responses)
+
+        return JsonResponse({"reply": reply})

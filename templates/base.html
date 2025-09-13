@@ -43,13 +43,11 @@
                         <!-- User Dropdown -->
                         <div class="relative" id="user-menu-button">
                             <button title="{{ user.username }}" class="flex items-center space-x-2 focus:outline-none">
-                                <!-- User Initial Avatar -->
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-600 text-white border-2 border-emerald-500">
                                     <span class="text-lg font-semibold">{{ user.username|first|upper }}</span>
                                 </div>
                                 <i class="fas fa-chevron-down text-xs text-slate-400"></i>
                             </button>
-                            <!-- Dropdown -->
                             <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-2">
                                 <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-emerald-400">Dashboard</a>
                                 <a href="{% url 'logout' %}" class="block px-4 py-2 text-slate-300 hover:bg-slate-700 hover:text-emerald-400">Logout</a>
@@ -109,13 +107,10 @@
     <footer class="bg-slate-800 border-t border-slate-700">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Column 1: Brand -->
                 <div class="md:col-span-1">
                     <a href="{% url 'home' %}" class="text-emerald-400 font-bold text-2xl">DCF Tracker</a>
                     <p class="text-slate-400 mt-2 text-sm">Quantifying digital impact for a sustainable future.</p>
                 </div>
-
-                <!-- Column 2: Product Links -->
                 <div>
                     <h4 class="text-lg font-semibold text-white">Product</h4>
                     <ul class="mt-4 space-y-2">
@@ -128,33 +123,25 @@
                         {% endif %}
                     </ul>
                 </div>
-                
-                <!-- Column 3: Company Links -->
                 <div>
                     <h4 class="text-lg font-semibold text-white">Company</h4>
                     <ul class="mt-4 space-y-2">
-                        <!-- TODO: Create these pages and update URLs -->
                         <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">About Us</a></li>
                         <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Blog</a></li>
                         <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Contact</a></li>
                     </ul>
                 </div>
-
-                <!-- Column 4: Legal Links -->
                 <div>
                     <h4 class="text-lg font-semibold text-white">Legal</h4>
                     <ul class="mt-4 space-y-2">
-                        <!-- TODO: Create these pages and update URLs -->
                         <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
                         <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
-
             <div class="mt-8 border-t border-slate-700 pt-8 flex flex-col sm:flex-row justify-between items-center">
                 <p class="text-slate-500 text-sm">&copy; {% now "Y" %} DCF Tracker. All Rights Reserved.</p>
                 <div class="flex space-x-4 mt-4 sm:mt-0">
-                    <!-- TODO: Add your social media links -->
                     <a href="#" class="text-slate-500 hover:text-emerald-400 transition-colors"><i class="fab fa-twitter fa-lg"></i></a>
                     <a href="#" class="text-slate-500 hover:text-emerald-400 transition-colors"><i class="fab fa-github fa-lg"></i></a>
                     <a href="#" class="text-slate-500 hover:text-emerald-400 transition-colors"><i class="fab fa-linkedin-in fa-lg"></i></a>
@@ -163,6 +150,26 @@
         </div>
     </footer>
 
+    <!-- Floating Chatbot -->
+    <div id="chatbot-container" class="fixed bottom-6 right-6 z-50">
+        <button id="chatbot-toggle" class="bg-emerald-500 hover:bg-emerald-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-emerald-400/50">
+            <i class="fas fa-seedling text-2xl"></i>
+        </button>
+        <div id="chatbot-box" class="hidden absolute bottom-20 right-0 w-80 h-96 bg-slate-800 rounded-xl shadow-lg flex flex-col border border-slate-700">
+            <div class="bg-emerald-600 text-white p-3 rounded-t-xl flex justify-between items-center">
+                <span class="font-bold">CO₂ Assistant</span>
+                <button id="chatbot-close" class="text-white/80 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="chatbot-messages" class="flex-1 p-3 overflow-y-auto space-y-2 text-sm"></div>
+            <div class="p-3 border-t border-slate-700 flex items-center">
+                <input id="chatbot-input" type="text" placeholder="Ask about CO₂..." 
+                       class="flex-1 h-10 px-3 rounded-lg bg-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <button id="chatbot-send" class="ml-2 bg-emerald-500 hover:bg-emerald-600 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg text-white transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Global JS -->
     <script>
@@ -171,11 +178,12 @@
             const userMenuButton = document.getElementById('user-menu-button');
             const userMenu = document.getElementById('user-menu');
             if (userMenuButton) {
-                userMenuButton.addEventListener('click', () => {
+                userMenuButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
                     userMenu.classList.toggle('hidden');
                 });
                 document.addEventListener('click', (e) => {
-                    if (!userMenuButton.contains(e.target)) {
+                    if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
                         userMenu.classList.add('hidden');
                     }
                 });
@@ -186,7 +194,6 @@
             const openButton = document.getElementById('mobile-menu-open-button');
             const closeButton = document.getElementById('mobile-menu-close-button');
             const mobileLinks = document.querySelectorAll('.mobile-link');
-            
             openButton.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
             closeButton.addEventListener('click', () => mobileMenu.classList.add('hidden'));
             mobileLinks.forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
@@ -202,6 +209,71 @@
                 });
             }, { threshold: 0.1 });
             scrollElements.forEach(el => observer.observe(el));
+
+            // Chatbot logic
+            const toggleBtn = document.getElementById("chatbot-toggle");
+            const box = document.getElementById("chatbot-box");
+            const closeBtn = document.getElementById("chatbot-close");
+            const sendBtn = document.getElementById("chatbot-send");
+            const input = document.getElementById("chatbot-input");
+            const messages = document.getElementById("chatbot-messages");
+
+            toggleBtn.onclick = () => box.classList.toggle("hidden");
+            closeBtn.onclick = () => box.classList.add("hidden");
+
+            function addMessage(text, from="user") {
+                const div = document.createElement("div");
+                div.className = from === "user" ? "text-right" : "text-left";
+                div.innerHTML = `<span class="inline-block px-3 py-2 rounded-lg ${from === "user" ? "bg-emerald-500 text-white" : "bg-slate-700 text-slate-200"}">${text}</span>`;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            async function sendMessage() {
+                const text = input.value.trim();
+                if (!text) return;
+                addMessage(text, "user");
+                input.value = "";
+                input.focus();
+
+                // Add a typing indicator
+                const typingIndicator = document.createElement("div");
+                typingIndicator.className = "text-left";
+                typingIndicator.innerHTML = `<span class="inline-block px-3 py-2 rounded-lg bg-slate-700 text-slate-200">...</span>`;
+                messages.appendChild(typingIndicator);
+                messages.scrollTop = messages.scrollHeight;
+
+                try {
+                    const res = await fetch("/chatbot/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({ message: text })
+                    });
+
+                    if (!res.ok) {
+                         throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+
+                    const data = await res.json();
+                    // Remove typing indicator and add bot message
+                    typingIndicator.remove();
+                    addMessage(data.reply, "bot");
+                } catch (error) {
+                    console.error("Chatbot request failed:", error);
+                    // Remove typing indicator and show error
+                    typingIndicator.remove();
+                    addMessage("Sorry, I couldn't connect to the server. Please try again later.", "bot");
+                }
+            }
+
+            sendBtn.onclick = sendMessage;
+            input.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+            
+            // Add a welcome message
+            addMessage("Hello! How can I help you with CO₂ emissions today?", "bot");
         });
     </script>
 </body>
