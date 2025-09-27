@@ -28,6 +28,15 @@
         </div>
     </header>
 
+    <!-- Daily CO₂ Goal Progress -->
+    <div class="bg-slate-800 p-4 rounded-xl mb-6 border border-slate-700">
+        <p class="text-sm text-slate-400 mb-1">Today's CO₂ Progress (Goal: {{ daily_goal }} kg)</p>
+        <div class="w-full bg-slate-700 rounded-full h-4">
+            <div class="bg-emerald-500 h-4 rounded-full" style="width: {{ daily_progress }}%;"></div>
+        </div>
+        <p class="text-xs text-slate-300 mt-1">{{ daily_co2 }} kg emitted today</p>
+    </div>
+
     <!-- Period Buttons -->
     <div class="flex justify-end space-x-2 mb-6">
         <a href="?period=week" class="px-4 py-2 rounded-lg font-semibold {% if period == "week" %}bg-emerald-500 text-white{% else %}bg-slate-700 text-slate-300{% endif %}">Week</a>

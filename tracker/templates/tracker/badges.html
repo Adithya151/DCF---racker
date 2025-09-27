@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}My Badges{% endblock %}
+{% block content %}
+<div class="container mx-auto p-4 md:p-6">
+    <div class="text-center mb-8">
+        <h2 class="text-4xl font-extrabold text-white tracking-tight">🌟 Your Badge Collection</h2>
+        <p class="text-slate-400 mt-2">A showcase of all your amazing environmental achievements.</p>
+    </div>
+
+    {% if user_badges %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for badge in user_badges %}
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700
+                    transform hover:-translate-y-1 transition-all duration-300
+                    hover:shadow-lg hover:shadow-cyan-400/20 group">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center mb-4
+                            border-4 border-slate-600 group-hover:border-cyan-400 transition-colors duration-300">
+                    <span class="text-5xl">{{ badge.badge.icon }}</span>
+                </div>
+                <h3 class="font-bold text-lg text-white mb-1">{{ badge.badge.name }}</h3>
+                <p class="text-slate-400 text-sm mb-3 h-10">{{ badge.badge.description }}</p>
+                <!-- Assuming you have an `earned_at` field on your UserBadge model -->
+                <p class="text-xs text-green-400 font-mono">Unlocked: {{ badge.earned_at|date:"M j, Y" }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-slate-800 rounded-xl border border-dashed border-slate-600">
+        <div class="text-5xl mb-4">🤔</div>
+        <h3 class="text-xl font-bold text-white">Your collection is empty!</h3>
+        <p class="text-slate-400 mt-2">Your journey begins now. Start logging your eco-friendly activities<br>to earn your first badge and see it appear here!</p>
+        <a href="{% url 'log_activity_url' %}" class="mt-6 inline-block bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-500 transition-colors">
+            Log an Activity
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

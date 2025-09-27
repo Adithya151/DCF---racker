@@ -39,6 +39,8 @@
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8 text-lg">
                     <a href="{% url 'home' %}#features" class="hover:text-emerald-400 transition-colors">Features</a>
+                    <a href="{% url 'leaderboard' %}" class="hover:text-yellow-400">🏆 Leaderboard</a>
+                    <a href="{% url 'badges' %}" class="hover:text-blue-400">🎖️ Badges</a>
                     {% if user.is_authenticated %}
                         <!-- User Dropdown -->
                         <div class="relative" id="user-menu-button">
