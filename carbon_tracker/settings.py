@@ -93,10 +93,12 @@ DATABASES = {
         'NAME': config("DB_NAME"),
         'USER': config("DB_USER"),
         'PASSWORD': config("DB_PASSWORD"),
-        'HOST': config("DB_HOST", default="localhost"),
-        'PORT': config("DB_PORT", default="3306"),
+        'HOST': config("DB_HOST"),
+        'PORT': config("DB_PORT", cast=int),  # PORT should be an integer
     }
 }
+
+
 
 
 # Password validation
