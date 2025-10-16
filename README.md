@@ -4,3 +4,5 @@ This project is a personalized dashboard that calculates and visualizes the carb
 
 ![Uploading image.png…](https://github.com/Adithya151/DCF---racker/blob/main/Screenshot%202025-10-16%20225210.png)
 
+![Uploading image.png…](https://github.com/Adithya151/DCF---racker/blob/main/Screenshot%202025-10-16%20225505.png)
+
