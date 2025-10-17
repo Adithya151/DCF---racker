@@ -50,7 +50,7 @@
 | ------------------ | --------------------------------------------- |
 | **Frontend**       | HTML5, CSS3, JavaScript, Tailwind CSS         |
 | **Backend**        | Django (Python 3.12)                          |
-| **Database**       | SQLite / PostgreSQL                           |
+| **Database**       | MySql(Local) and Railway(Public)                         |
 | **Visualization**  | Chart.js                                      |
 | **Authentication** | Django Auth System with Email-based OTP Reset |
 | **Environment**    | Render Cloud Deployment                       |
