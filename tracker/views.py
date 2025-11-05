@@ -13,6 +13,14 @@ from datetime import timedelta, date
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
+from django.http import JsonResponse
+from .gemini_chatbot import ask_gemini
+
+
+from .models import UserProfile, Badge, UserBadge, ActivityLog
+from django.db.models import Sum
+from django.db.models import Sum, F, FloatField, ExpressionWrapper
+
 CO2_EMAIL = 0.004      # 4 g per email
 CO2_DRIVE = 1.1        # 1.1 kg per GB/month
 CO2_COMMIT = 0.0005    # 0.5 g per commit
@@ -162,9 +170,7 @@ def log_activity(request):
     return render(request, "tracker/log_activity.html", {"form": form})
 
 
-# -------------------------------
 # LEADERBOARD VIEW
-# -------------------------------
 @login_required(login_url='login')
 def leaderboard(request):
     # Always make sure profiles are up-to-date
@@ -207,121 +213,14 @@ def set_dashboard_flag(request):
 def chatbot(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        user_message = data.get("message", "").lower().strip()
-        responses = []
+        user_message = data.get("message", "").strip()
+        reply = ask_gemini(request.user, user_message)
 
-        greetings = ["hi", "hello", "hey", "yo", "hii", "good morning", "good evening"]
-        if any(word in user_message for word in greetings):
-            responses.append("Hello 👋! I'm your CO₂ tracker assistant. How can I help you today?")
-
-        if any(word in user_message for word in ["thanks", "thank you", "thx", "ty", "cheers"]):
-            responses.append("You're welcome 💚! Glad I could help.")
-
-        if "who are you" in user_message or "what are you" in user_message:
-            responses.append("I'm your CO₂ assistant 🌱. I help you track your digital carbon footprint and provide tips to reduce it.")
-
-        if "how are you" in user_message:
-            responses.append("I'm doing great, thanks for asking! 🌟 How about you?")
-
-        if "bye" in user_message or "good night" in user_message:
-            responses.append("Goodbye 👋, take care of your carbon footprint! 🌍")
-
-        # Today's CO₂
-        if any(word in user_message for word in ["today", "co2", "emission", "today's co2"]):
-            today = timezone.now().date()
-            logs_today = ActivityLog.objects.filter(user=request.user, date=today)
-            total_today = sum(
-                log.emails_sent * CO2_EMAIL +
-                log.drive_storage_gb * CO2_DRIVE +
-                log.github_commits * CO2_COMMIT
-                for log in logs_today
-            )
-            responses.append(f"🌱 Today, you have emitted {round(total_today, 2)} kg of CO₂ based on your logged activities.")
-
-        # Dashboard summary
-        if any(word in user_message for word in ["dashboard", "summary", "activity", "track"]):
-            logs_all = ActivityLog.objects.filter(user=request.user)
-            total_co2 = sum(
-                log.emails_sent * CO2_EMAIL +
-                log.drive_storage_gb * CO2_DRIVE +
-                log.github_commits * CO2_COMMIT
-                for log in logs_all
-            )
-            total_emails = sum(log.emails_sent for log in logs_all)
-            total_drive = sum(log.drive_storage_gb for log in logs_all)
-            total_commits = sum(log.github_commits for log in logs_all)
-            if total_drive >= total_emails and total_drive >= total_commits:
-                top_source = "Drive Storage"
-            elif total_emails >= total_drive and total_emails >= total_commits:
-                top_source = "Emails Sent"
-            else:
-                top_source = "GitHub Commits"
-            responses.append(
-                f"📊 Your dashboard summary: Total CO₂: {round(total_co2,2)} kg. "
-                f"Top emission source: {top_source}. Emails: {total_emails}, Drive: {total_drive} GB, Commits: {total_commits}."
-            )
-
-        # Next week prediction
-        # 🔹 Next Week Prediction
-        if any(word in user_message for word in ["next week", "prediction", "future co2", "forecast"]):
-            logs_all = ActivityLog.objects.filter(user=request.user).order_by("date")
-            chart_data = []
-            cumulative_co2 = 0
-            for log in logs_all:
-                daily_co2 = (
-                    log.emails_sent * CO2_EMAIL +
-                    log.drive_storage_gb * CO2_DRIVE +
-                    log.github_commits * CO2_COMMIT
-                )
-                cumulative_co2 += daily_co2
-                chart_data.append(cumulative_co2)
-
-            if len(chart_data) >= 3:
-                X = np.arange(len(chart_data)).reshape(-1, 1)
-                y = np.array(chart_data)
-                model = LinearRegression()
-                model.fit(X, y)
-                next_index = len(chart_data) + 7  # predict 7 days later
-                prediction = round(float(model.predict([[next_index]])[0]), 2)
-                responses.append(f"📈 Based on your past activity, your CO₂ emission next week is predicted to be {prediction} kg.")
-            else:
-                responses.append("I need more data to predict your CO₂ for next week. Log a few more days of activity first!")
-
-
-        # Reduction tips
-        reduce_keywords = ["reduce", "save", "cut", "lower", "control", "decrease"]
-        if any(word in user_message for word in reduce_keywords):
-            responses.append(
-                "You can reduce CO₂ 🌱 by:\n"
-                "- Deleting unused emails\n"
-                "- Cleaning up cloud storage\n"
-                "- Committing efficiently\n"
-                "- Using energy-efficient devices or settings"
-            )
-
-        # CO₂ / environment info
-        co2_keywords = ["co2", "carbon", "pollution", "emission", "footprint", "environment"]
-        if any(word in user_message for word in co2_keywords):
-            responses.append(
-                "Every email, file stored, or commit adds to your digital CO₂ footprint. "
-                "Playing games, using cloud storage, or sending emails all emit CO₂. "
-                "I can help you track and reduce it using your dashboard."
-            )
-
-        # Fallback
-        if not responses:
-            responses.append(
-                "Hmm 🤔 I didn’t quite get that. Ask me about your CO₂ emissions, dashboard stats, next week prediction, or tips to reduce your digital carbon footprint."
-            )
-
-        reply = " ".join(responses)
         return JsonResponse({"reply": reply})
 
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
-from .models import UserProfile, Badge, UserBadge, ActivityLog
-from django.db.models import Sum
-from django.db.models import Sum, F, FloatField, ExpressionWrapper
-# Leaderboard view
+
 # Badges view
 @login_required
 def badges(request):
