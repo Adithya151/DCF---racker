@@ -171,7 +171,6 @@ def log_activity(request):
 
 
 # LEADERBOARD VIEW
-@login_required(login_url='login')
 def leaderboard(request):
     # Always make sure profiles are up-to-date
     for profile in UserProfile.objects.all():
@@ -209,7 +208,6 @@ def set_dashboard_flag(request):
 
 
 @csrf_exempt
-@login_required
 def chatbot(request):
     if request.method == "POST":
         data = json.loads(request.body)
