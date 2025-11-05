@@ -29,10 +29,11 @@ import os
 from decouple import config
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "dcf-tracker.onrender.com",  # live Render domain
+    'digitalco2-tracker.onrender.com',
+    'localhost',
+    '127.0.0.1'
 ]
+
 
 
 
@@ -142,7 +143,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATIC_URL = '/static/'
 
-# ✅ Add this line — this is what Django needs!
+# Add this line — this is what Django needs!
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # (Optional but good for local development)
@@ -150,7 +151,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# ✅ Ensure WhiteNoise is used for serving static files in production
+# Ensure WhiteNoise is used for serving static files in production
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 # Optional (recommended for production performance)
