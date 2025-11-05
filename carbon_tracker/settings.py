@@ -31,7 +31,7 @@ from decouple import config
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "dcf-tracker.onrender.com",  # your live Render domain
+    "dcf-tracker.onrender.com",  # live Render domain
 ]
 
 

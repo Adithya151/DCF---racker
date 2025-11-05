@@ -16,6 +16,10 @@
             <h1 class="text-3xl md:text-4xl font-extrabold text-white scroll-reveal">
                 Welcome back, <span class="gradient-text">{{ user.username|default:'User' }}</span>!
             </h1>
+            <p class="text-slate-400 mt-1">🌍 Your current global rank: 
+  <b class="text-emerald-400">{{ user_rank }}</b>
+</p>
+
             <p class="text-slate-400 mt-1 scroll-reveal">Here's your digital carbon footprint summary.</p>
         </div>
         <div class="flex space-x-2 mt-4 sm:mt-0">

@@ -6,20 +6,13 @@ class ActivityLogForm(forms.ModelForm):
         model = ActivityLog
         fields = ['emails_sent', 'drive_storage_gb', 'github_commits']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
             'emails_sent': forms.NumberInput(attrs={
-                'class': 'w-full rounded-lg border border-slate-600 bg-white text-slate-900 px-10 py-2 focus:ring-emerald-500 focus:border-emerald-500',
-                'placeholder': 'Enter number of emails',
+                'class': 'w-full bg-slate-700 text-white border border-slate-600 rounded-lg py-2 px-10 focus:outline-none focus:ring-2 focus:ring-emerald-500'
             }),
             'drive_storage_gb': forms.NumberInput(attrs={
-                'class': 'w-full rounded-lg border border-slate-600 bg-white text-slate-900 px-10 py-2 focus:ring-emerald-500 focus:border-emerald-500',
-                'placeholder': 'Enter storage in GB',
+                'class': 'w-full bg-slate-700 text-white border border-slate-600 rounded-lg py-2 px-10 focus:outline-none focus:ring-2 focus:ring-emerald-500'
             }),
             'github_commits': forms.NumberInput(attrs={
-                'class': 'w-full rounded-lg border border-slate-600 bg-white text-slate-900 px-10 py-2 focus:ring-emerald-500 focus:border-emerald-500',
-                'placeholder': 'Enter commits count',
+                'class': 'w-full bg-slate-700 text-white border border-slate-600 rounded-lg py-2 px-10 focus:outline-none focus:ring-2 focus:ring-emerald-500'
             }),
         }
-        
-        
-

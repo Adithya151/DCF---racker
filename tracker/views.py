@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import ActivityLogForm
@@ -8,6 +9,7 @@ from django.views.decorators.cache import never_cache
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from datetime import timedelta, date
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -97,6 +99,14 @@ def dashboard(request):
     )
     daily_progress = min(int((daily_co2 / DAILY_CO2_GOAL) * 100), 100)
 
+    # User rank
+    all_profiles = list(UserProfile.objects.order_by("total_co2"))
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if user_profile in all_profiles:
+        user_rank = all_profiles.index(user_profile) + 1
+    else:
+        user_rank = None
+
     return render(request, "tracker/dashboard.html", {
         "logs": logs_period,
         "total_co2": round(total_co2, 2),
@@ -111,22 +121,74 @@ def dashboard(request):
         "daily_co2": round(daily_co2, 2),
         "daily_progress": daily_progress,
         "daily_goal": DAILY_CO2_GOAL,
+        "user_rank": user_rank,
     })
 
 
+
 @login_required
+@login_required(login_url='login')
 def log_activity(request):
     if request.method == "POST":
         form = ActivityLogForm(request.POST)
         if form.is_valid():
-            activity = form.save(commit=False)
-            activity.user = request.user
-            activity.save()
-            return redirect('dashboard')
+            log = form.save(commit=False)
+            log.user = request.user
+            log.date = date.today()
+            log.save()
+
+            # --- Update total CO₂ for leaderboard ---
+            agg = ActivityLog.objects.filter(user=request.user).aggregate(
+                total_co2=Sum(
+                    ExpressionWrapper(
+                        F("emails_sent") * CO2_EMAIL +
+                        F("drive_storage_gb") * CO2_DRIVE +
+                        F("github_commits") * CO2_COMMIT,
+                        output_field=FloatField()
+                    )
+                )
+            )
+            total = agg["total_co2"] or 0.0
+            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            profile.total_co2 = total
+            profile.save()
+            # ------------------------------------------------
+
+            messages.success(request, "✅ Activity logged successfully!")
+            return redirect("dashboard")
     else:
         form = ActivityLogForm()
+
     return render(request, "tracker/log_activity.html", {"form": form})
 
+
+# -------------------------------
+# LEADERBOARD VIEW
+# -------------------------------
+@login_required(login_url='login')
+def leaderboard(request):
+    # Always make sure profiles are up-to-date
+    for profile in UserProfile.objects.all():
+        agg = ActivityLog.objects.filter(user=profile.user).aggregate(
+            total_co2=Sum(
+                ExpressionWrapper(
+                    F("emails_sent") * 0.004 +
+                    F("drive_storage_gb") * 1.1 +
+                    F("github_commits") * 0.0005,
+                    output_field=FloatField()
+                )
+            )
+        )
+        total = agg["total_co2"] or 0.0
+        profile.total_co2 = total
+        profile.save()
+
+    top_users = UserProfile.objects.order_by("total_co2")[:10]
+    print("Profiles:", UserProfile.objects.all())
+    print("Top users:", list(top_users.values("user__username", "total_co2")))
+
+
+    return render(request, "tracker/leaderboard.html", {"top_users": top_users})
 
 def reset_dashboard(request):
     if request.user.is_authenticated:
@@ -260,28 +322,6 @@ from .models import UserProfile, Badge, UserBadge, ActivityLog
 from django.db.models import Sum
 from django.db.models import Sum, F, FloatField, ExpressionWrapper
 # Leaderboard view
-def leaderboard(request):
-    # Update total CO2 for all users
-    for profile in UserProfile.objects.all():
-        agg = ActivityLog.objects.filter(user=profile.user).aggregate(
-            total_co2=Sum(
-                ExpressionWrapper(
-                    F("emails_sent") * 0.004 +
-                    F("drive_storage_gb") * 1.1 +
-                    F("github_commits") * 0.0005,
-                    output_field=FloatField()
-                )
-            )
-        )
-        total = agg["total_co2"] or 0.0
-        profile.total_co2 = total
-        profile.save()
-
-    # Leaderboard: top 10 lowest emitters
-    top_users = UserProfile.objects.order_by("total_co2")[:10]
-
-    return render(request, "tracker/leaderboard.html", {"top_users": top_users})
-
 # Badges view
 @login_required
 def badges(request):
