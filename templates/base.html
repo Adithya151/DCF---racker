@@ -76,6 +76,8 @@
             </div>
             <div class="flex flex-col items-center space-y-8 text-2xl mt-10">
                  <a href="{% url 'home' %}#features" class="hover:text-emerald-400 transition-colors mobile-link">Features</a>
+                 <a href="{% url 'leaderboard' %}" class="hover:text-yellow-400 transition-colors mobile-link">Leaderboard</a>
+                 <a href="{% url 'badges' %}" class="hover:text-blue-400 transition-colors mobile-link">Badges</a>
                  {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}" class="hover:text-emerald-400 transition-colors mobile-link">Dashboard</a>
                     <a href="{% url 'logout' %}" class="hover:text-emerald-400 transition-colors mobile-link">Logout</a>

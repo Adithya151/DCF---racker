@@ -237,10 +237,6 @@ def chatbot(request):
 # Badges view
 @login_required
 def badges(request):
-    """
-    Handles user badges display and automatic unlocking logic.
-    Awards 'First Activity Logged' when the user logs their first activity.
-    """
 
     # Ensure the badge exists (get_or_create ensures no duplicates)
     first_log_badge, _ = Badge.objects.get_or_create(

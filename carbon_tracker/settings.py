@@ -162,6 +162,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+
+LOGIN_URL = '/users/login/'           # Redirects here when login is required 
+
 
 LOGIN_REDIRECT_URL = 'dashboard'  # Go to the dashboard page after login
 LOGOUT_REDIRECT_URL = 'home'      # Go to the homepage after logout
