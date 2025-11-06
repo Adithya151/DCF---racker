@@ -29,7 +29,7 @@ import os
 from decouple import config
 
 ALLOWED_HOSTS = [
-    'Digita_CO2_Footprint.onrender.com',
+    'digital-co2-footprint.onrender.com',
     
     'localhost',
     '127.0.0.1'
