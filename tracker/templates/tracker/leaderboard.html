@@ -86,36 +86,46 @@
 </style>
 
 <div class="leaderboard-container">
-    <h2>🌍 Global CO₂ Leaderboard</h2>
+    <h2>Global CO₂ Leaderboard</h2>
 
     {% if top_users %}
         <table>
             <thead>
                 <tr>
-                    <th>Rank</th>
-                    <th>User</th>
-                    <th>Total CO₂ (kg)</th>
+                    <th>Over ALL Rank</th>
                 </tr>
-            </thead>
-            <tbody>
-                {% for user in top_users %}
-                    <tr>
-                        <td>
-                            {% if forloop.counter == 1 %}
-                                <span class="rank-badge rank-1">🥇 #{{ forloop.counter }}</span>
-                            {% elif forloop.counter == 2 %}
-                                <span class="rank-badge rank-2">🥈 #{{ forloop.counter }}</span>
-                            {% elif forloop.counter == 3 %}
-                                <span class="rank-badge rank-3">🥉 #{{ forloop.counter }}</span>
-                            {% else %}
-                                <span class="rank-badge rank-other">#{{ forloop.counter }}</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ user.user.username }}</td>
-                        <td>{{ user.total_co2|floatformat:3 }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
+            <thead>
+    <tr>
+        <th>Rank</th>
+        <th>User</th>
+        <th>Logs</th>
+        <th>Total CO₂ (kg)</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for user in top_users %}
+            <tr>
+                <td>
+                    {% if forloop.counter == 1 %}
+                        <span class="rank-badge rank-1">🥇 #{{ forloop.counter }}</span>
+                    {% elif forloop.counter == 2 %}
+                        <span class="rank-badge rank-2">🥈 #{{ forloop.counter }}</span>
+                    {% elif forloop.counter == 3 %}
+                        <span class="rank-badge rank-3">🥉 #{{ forloop.counter }}</span>
+                    {% else %}
+                        <span class="rank-badge rank-other">#{{ forloop.counter }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.user.username }}</td>
+                <td>{{ user.log_count }}</td>
+                <td>{{ user.total_co2 }}</td>
+                <td>{{ user.score }}</td>
+
+            </tr>
+        {% endfor %}
+    </tbody>
+
         </table>
     {% else %}
         <div class="no-data">No user data available yet. Start logging your activities!</div>

@@ -19,7 +19,7 @@ from .gemini_chatbot import ask_gemini
 
 from .models import UserProfile, Badge, UserBadge, ActivityLog
 from django.db.models import Sum
-from django.db.models import Sum, F, FloatField, ExpressionWrapper
+from django.db.models import Sum, F, FloatField, ExpressionWrapper,Count
 
 CO2_EMAIL = 0.004      # 4 g per email
 CO2_DRIVE = 1.1        # 1.1 kg per GB/month
@@ -162,7 +162,7 @@ def log_activity(request):
             profile.save()
             # ------------------------------------------------
 
-            messages.success(request, "✅ Activity logged successfully!")
+            messages.success(request, "Activity logged successfully!")
             return redirect("dashboard")
     else:
         form = ActivityLogForm()
@@ -172,7 +172,7 @@ def log_activity(request):
 
 # LEADERBOARD VIEW
 def leaderboard(request):
-    # Always make sure profiles are up-to-date
+    # Update each user's total CO₂
     for profile in UserProfile.objects.all():
         agg = ActivityLog.objects.filter(user=profile.user).aggregate(
             total_co2=Sum(
@@ -182,18 +182,33 @@ def leaderboard(request):
                     F("github_commits") * 0.0005,
                     output_field=FloatField()
                 )
-            )
+            ),
+            log_count=Count("id"),
         )
+
         total = agg["total_co2"] or 0.0
+        logs = agg["log_count"] or 0
+
         profile.total_co2 = total
         profile.save()
 
-    top_users = UserProfile.objects.order_by("total_co2")[:10]
-    print("Profiles:", UserProfile.objects.all())
-    print("Top users:", list(top_users.values("user__username", "total_co2")))
+    # Hybrid ranking: reward more logs, penalize high emissions
+    ranked_users = []
+    for profile in UserProfile.objects.all():
+        logs = ActivityLog.objects.filter(user=profile.user).count()
+        total_co2 = profile.total_co2
+        score = (logs * 10) - total_co2
+        ranked_users.append({
+            "user": profile.user,
+            "log_count": logs,
+            "total_co2": total_co2,
+            "score": round(score, 2),
+        })
 
+    # Sort users by score (high to low)
+    ranked_users = sorted(ranked_users, key=lambda x: x["score"], reverse=True)[:10]
 
-    return render(request, "tracker/leaderboard.html", {"top_users": top_users})
+    return render(request, "tracker/leaderboard.html", {"top_users": ranked_users})
 
 def reset_dashboard(request):
     if request.user.is_authenticated:
@@ -222,15 +237,28 @@ def chatbot(request):
 # Badges view
 @login_required
 def badges(request):
-    # Example badge 
-    first_log_badge = Badge.objects.get_or_create(
+    """
+    Handles user badges display and automatic unlocking logic.
+    Awards 'First Activity Logged' when the user logs their first activity.
+    """
+
+    # Ensure the badge exists (get_or_create ensures no duplicates)
+    first_log_badge, _ = Badge.objects.get_or_create(
         name="First Activity Logged",
-        defaults={'description': "Logged your first activity!", 'icon': "🎉"}
-    )[0]
+        defaults={
+            "description": "Logged your first activity!",
+            "icon": "🎉"
+        }
+    )
 
+    # Count how many logs the user has
     user_logs = ActivityLog.objects.filter(user=request.user).count()
-    if user_logs >= 1 and not UserBadge.objects.filter(user=request.user, badge=first_log_badge).exists():
-        UserBadge.objects.create(user=request.user, badge=first_log_badge)
 
-    user_badges = UserBadge.objects.filter(user=request.user)
-    return render(request, 'tracker/badges.html', {'user_badges': user_badges})
+    # Award badge if user qualifies and doesn’t already have it
+    if user_logs >= 1:
+        UserBadge.objects.get_or_create(user=request.user, badge=first_log_badge)
+
+    # Retrieve all badges this user has
+    user_badges = UserBadge.objects.filter(user=request.user).select_related('badge')
+
+    return render(request, "tracker/badges.html", {"user_badges": user_badges})
