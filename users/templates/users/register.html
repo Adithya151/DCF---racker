@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
-{% comment %}
-  This template assumes you might eventually use a custom Django form
-  to apply CSS classes directly, which is the recommended approach.
-{% endcomment %}
 
 {% block content %}
 <style>
-    /* Keyframes for animations */
+    /* Custom Animations */
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -18,87 +14,129 @@
     }
     .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
     .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
+    
+    /* Text Gradient Utility if not in base.css */
+    .text-gradient {
+        background: linear-gradient(to right, #34d399, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 
-<div class="min-h-screen bg-slate-900 flex justify-center items-center p-4">
-    <div class="relative flex w-full max-w-5xl h-auto min-h-[600px] bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+<div class="min-h-screen bg-slate-900 flex justify-center items-center p-4 font-sans">
+    <div class="relative flex w-full max-w-5xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700 min-h-[650px]">
         
-        <!-- Left Side: The Image (DIFFERENT from login) -->
+        <!-- Left Side: The Image -->
         <div class="hidden md:block w-1/2 relative animate-fade-in">
-            <!-- Replace this URL with your own high-quality image that evokes growth/nature -->
-            <img src="https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')"
+            <!-- Fixed syntax error in URL -->
+            <img src="https://images.pexels.com/photos/807598/pexels-photo-807598.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                  alt="A green leaf with water droplets, symbolizing growth and nature" 
                  class="w-full h-full object-cover">
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/20 to-transparent"></div>
+            
+            <!-- Enhanced Overlay for better text readability -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+            
             <!-- Text on Image -->
-            <div class="absolute bottom-10 left-10">
-                <h2 class="text-3xl font-bold text-white">Start Your Green Journey Today.</h2>
-                <p class="text-slate-300 mt-2">Join a community making a tangible difference.</p>
+            <div class="absolute bottom-10 left-10 right-10 z-10">
+                <h2 class="text-3xl font-bold text-white leading-tight">Start Your Green Journey Today.</h2>
+                <p class="text-slate-300 mt-3 text-lg">Join a community making a tangible difference in the digital world.</p>
             </div>
         </div>
 
         <!-- Right Side: The Form -->
-        <div class="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center animate-fade-in-up">
+        <div class="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center animate-fade-in-up relative z-10">
             <div class="max-w-md mx-auto w-full">
+                
                 <!-- Header -->
                 <div class="text-center mb-8">
-                    <h2 class="text-3xl font-extrabold gradient-text">Create Your Account</h2>
-                    <p class="mt-2 text-sm text-slate-400">Join the movement towards a greener digital future.</p>
+                    <h2 class="text-3xl font-extrabold text-white">
+                        Create <span class="text-gradient">Account</span>
+                    </h2>
+                    <p class="mt-2 text-sm text-slate-400">Join the movement towards a greener future.</p>
                 </div>
 
                 <!-- Django Messages (Error Handling) -->
                 {% if messages %}
-                    <div class="mb-4 space-y-2">
+                    <div class="mb-6 space-y-2">
                         {% for message in messages %}
-                          <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm" role="alert">
-                            <i class="fas fa-exclamation-circle mr-2"></i><span>{{ message }}</span>
+                          <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm flex items-center shadow-sm" role="alert">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <span>{{ message }}</span>
                           </div>
                         {% endfor %}
                     </div>
                 {% endif %}
 
                 <!-- Registration Form -->
-                <form method="POST" class="space-y-4">
+                <form method="POST" class="space-y-5">
                     {% csrf_token %}
                     
-                    <!-- Using the improved input field styles for better contrast -->
-                    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-user"></i></span>
-                        <input type="text" name="username" placeholder="Username" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                    <!-- Username -->
+                    <div class="relative group">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" name="username" placeholder="Username" required autocomplete="username"
+                            class="w-full pl-10 pr-4 py-3.5 bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all">
                     </div>
-                    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-envelope"></i></span>
-                        <input type="email" name="email" placeholder="Email Address" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+
+                    <!-- Email -->
+                    <div class="relative group">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input type="email" name="email" placeholder="Email Address" required autocomplete="email"
+                            class="w-full pl-10 pr-4 py-3.5 bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all">
                     </div>
-                    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-lock"></i></span>
-                        <input type="password" name="password" placeholder="Password" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+
+                    <!-- Password -->
+                    <div class="relative group">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" placeholder="Password" required autocomplete="new-password"
+                            class="w-full pl-10 pr-4 py-3.5 bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all">
                     </div>
-                    <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-check-circle"></i></span>
-                        <input type="password" name="password2" placeholder="Confirm Password" required class="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+
+                    <!-- Confirm Password -->
+                    <div class="relative group">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <input type="password" name="password2" placeholder="Confirm Password" required autocomplete="new-password"
+                            class="w-full pl-10 pr-4 py-3.5 bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all">
                     </div>
                     
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transform hover:-translate-y-1 shadow-lg hover:shadow-emerald-600/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-emerald-500 transition-all duration-300">
+                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-lg hover:bg-emerald-500 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-600/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-emerald-500 transition-all duration-200">
                         Create Account
                     </button>
                 </form>
 
                 <!-- Social Logins -->
-                <div class="mt-6">
-                    <div class="relative flex py-2 items-center"><div class="flex-grow border-t border-slate-600"></div><span class="flex-shrink mx-4 text-slate-500 text-sm">Or sign up with</span><div class="flex-grow border-t border-slate-600"></div></div>
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <a href="#" class="w-full flex items-center justify-center py-3 px-4 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 hover:border-slate-500 transition-all duration-300">
-                            <i class="fab fa-google text-lg mr-3"></i><span class="font-medium">Google</span>
-                        </a>
-                        <a href="#" class="w-full flex items-center justify-center py-3 px-4 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 hover:border-slate-500 transition-all duration-300">
-                            <i class="fab fa-facebook-f text-lg mr-3"></i><span class="font-medium">Facebook</span>
+                <div class="mt-8">
+                    <div class="relative flex py-2 items-center">
+                        <div class="flex-grow border-t border-slate-700"></div>
+                        <span class="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider font-semibold">Or sign up with</span>
+                        <div class="flex-grow border-t border-slate-700"></div>
+                    </div>
+                    
+                    <!-- Single Column for Google (Grid removed for single item) -->
+                    <div class="mt-4">
+                        <a href="/accounts/google/login/" class="w-full flex items-center justify-center py-3 px-4 bg-slate-700/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-500 transition-all duration-300">
+                            <!-- Google Icon -->
+                            <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                            </svg>
+                            <span class="font-medium">Continue with Google</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Link to Login -->
-                <p class="text-sm text-center text-slate-400 mt-6">
+                <p class="text-sm text-center text-slate-400 mt-8">
                     Already have an account?
-                    <a href="{% url 'login' %}" class="font-medium text-emerald-400 hover:text-emerald-300 hover:underline">Login</a>
+                    <a href="{% url 'login' %}" class="font-semibold text-emerald-400 hover:text-emerald-300 hover:underline transition-colors">Login</a>
                 </p>
             </div>
         </div>
