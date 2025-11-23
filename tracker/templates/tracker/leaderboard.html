@@ -1,134 +1,295 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <style>
-    /* Gradient background */
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --accent-green: #00e676;
+        --text-primary: #ffffff;
+        --text-secondary: #b0b3b8;
+        --gold: #ffd700;
+        --silver: #e0e0e0;
+        --bronze: #cd7f32;
+    }
+
     body {
-        background: linear-gradient(135deg, #1c1c1c, #2d3436);
-        color: #fff;
+        background: radial-gradient(circle at top right, #1a2a33, #121212);
+        color: var(--text-primary);
         font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        margin: 0;
     }
 
-    .leaderboard-container {
-        max-width: 800px;
-        margin: 80px auto;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        box-shadow: 0 4px 30px rgba(0,0,0,0.2);
-        backdrop-filter: blur(10px);
-        padding: 40px;
-        animation: fadeIn 1s ease-in-out;
+    .leaderboard-wrapper {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 0 20px;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
+    .header-section {
         text-align: center;
-        margin-bottom: 30px;
-        color: #00e676;
-        font-weight: 600;
+        margin-bottom: 40px;
+    }
+
+    .header-section h2 {
+        font-size: 2.5rem;
+        margin: 0 0 10px 0;
+        background: linear-gradient(to right, #fff, var(--accent-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header-section p {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    /* Desktop Table Styling */
+    .table-container {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        border-radius: 10px;
-        overflow: hidden;
     }
 
     thead {
-        background-color: #00e676;
-        color: #000;
+        background: rgba(0, 230, 118, 0.1);
+        border-bottom: 1px solid var(--glass-border);
     }
 
-    th, td {
-        padding: 15px;
-        text-align: center;
-        font-size: 16px;
+    th {
+        padding: 20px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--accent-green);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
     }
 
-    tbody tr {
-        background: rgba(255,255,255,0.1);
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        transition: background 0.3s ease;
+    td {
+        padding: 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--glass-border);
     }
 
-    tbody tr:hover {
-        background: rgba(255,255,255,0.25);
-        transform: scale(1.02);
+    /* Avatar & User Styling */
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
-    .rank-badge {
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 12px;
+        color: #fff;
+        font-size: 18px;
+        border: 2px solid var(--glass-border);
+        flex-shrink: 0;
     }
 
-    /* Rank colors */
-    .rank-1 { background: linear-gradient(45deg, #ffd700, #ffcc00); color: #000; }
-    .rank-2 { background: linear-gradient(45deg, #c0c0c0, #d9d9d9); color: #000; }
-    .rank-3 { background: linear-gradient(45deg, #cd7f32, #d88b4a); color: #000; }
-    .rank-other { background: #444; }
+    .username {
+        font-weight: 500;
+        font-size: 1rem;
+        color: #fff;
+    }
+
+    /* Rank Indicators */
+    .rank-indicator {
+        font-weight: 800;
+        font-size: 1.2rem;
+        width: 30px;
+        text-align: center;
+    }
+
+    /* Top 3 Colors */
+    .rank-1 .rank-indicator { color: var(--gold); text-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+    .rank-1 .avatar { border-color: var(--gold); color: var(--gold); }
+    
+    .rank-2 .rank-indicator { color: var(--silver); }
+    .rank-2 .avatar { border-color: var(--silver); color: var(--silver); }
+    
+    .rank-3 .rank-indicator { color: var(--bronze); }
+    .rank-3 .avatar { border-color: var(--bronze); color: var(--bronze); }
+
+    .stat-label { display: none; } /* Hidden on Desktop */
 
     .no-data {
+        padding: 50px;
         text-align: center;
-        padding: 30px;
-        color: #ccc;
-        font-size: 18px;
+        color: var(--text-secondary);
     }
 
-    .trophy {
-        font-size: 26px;
+    /* --- MOBILE CARD VIEW --- */
+    @media (max-width: 768px) {
+        .header-section h2 { font-size: 1.8rem; }
+        .leaderboard-wrapper { margin-top: 20px; padding: 0 15px; }
+        
+        /* Hide standard table headers */
+        thead { display: none; }
+        .table-container { background: transparent; border: none; box-shadow: none; }
+
+        tbody tr {
+            display: grid;
+            grid-template-columns: auto 1fr; /* Column 1: Rank, Column 2: User */
+            gap: 0 15px;
+            
+            background: #252a2e; /* Solid dark card color for better contrast */
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        /* Rank (Top Left) */
+        td:nth-child(1) {
+            grid-column: 1;
+            grid-row: 1;
+            padding: 0;
+            border: none;
+            display: flex;
+            align-items: center;
+            width: auto;
+        }
+
+        /* User (Top Right) */
+        td:nth-child(2) {
+            grid-column: 2;
+            grid-row: 1;
+            padding: 0;
+            border: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Stats: Logs, CO2, Score (Full Width Rows below) */
+        td:nth-child(3), 
+        td:nth-child(4), 
+        td:nth-child(5) {
+            grid-column: 1 / -1; /* Span full width */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-top: 5px;
+        }
+
+        /* Add top border only to the first stat (Logs) to separate from header */
+        td:nth-child(3) {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+
+        td:last-child { border-bottom: none; }
+
+        /* Show Labels on Mobile */
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .rank-indicator { font-size: 1.4rem; text-align: left; }
+        .username { font-size: 1.1rem; }
     }
 </style>
 
-<div class="leaderboard-container">
-    <h2>Global CO₂ Leaderboard</h2>
+<div class="leaderboard-wrapper">
+    <div class="header-section">
+        <h2>Top Contributors</h2>
+        <p>Leaders in CO₂ reduction worldwide</p>
+    </div>
 
-    {% if top_users %}
-        <table>
+    <div class="table-container">
+        {% if top_users %}
+        <table class="top-rank">
             <thead>
                 <tr>
-                    <th>Over ALL Rank</th>
+                    <th width="10%">Rank</th>
+                    <th width="40%">User</th>
+                    <th width="15%" style="text-align: center;">Logs</th>
+                    <th width="20%" style="text-align: center;">Reduced (kg)</th>
+                    <th width="15%" style="text-align: right;">Score</th>
                 </tr>
-            <thead>
-    <tr>
-        <th>Rank</th>
-        <th>User</th>
-        <th>Logs</th>
-        <th>Total CO₂ (kg)</th>
-        <th>Score</th>
-    </tr>
-    </thead>
-    <tbody>
-        {% for user in top_users %}
-            <tr>
-                <td>
-                    {% if forloop.counter == 1 %}
-                        <span class="rank-badge rank-1">🥇 #{{ forloop.counter }}</span>
-                    {% elif forloop.counter == 2 %}
-                        <span class="rank-badge rank-2">🥈 #{{ forloop.counter }}</span>
-                    {% elif forloop.counter == 3 %}
-                        <span class="rank-badge rank-3">🥉 #{{ forloop.counter }}</span>
-                    {% else %}
-                        <span class="rank-badge rank-other">#{{ forloop.counter }}</span>
-                    {% endif %}
-                </td>
-                <td>{{ user.user.username }}</td>
-                <td>{{ user.log_count }}</td>
-                <td>{{ user.total_co2 }}</td>
-                <td>{{ user.score }}</td>
+            </thead>
+            <tbody>
+                {% for user in top_users %}
+                <tr class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                    
+                    <!-- Rank Column -->
+                    <td>
+                        <div class="rank-indicator">
+                            {% if forloop.counter <= 3 %}
+                                #{{ forloop.counter }}
+                            {% else %}
+                                <span style="color: var(--text-secondary); font-weight: 400;">{{ forloop.counter }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
 
-            </tr>
-        {% endfor %}
-    </tbody>
+                    <!-- User Column -->
+                    <td>
+                        <div class="user-cell">
+                            <!-- Generates an avatar with the first letter of username -->
+                            <div class="avatar">
+                                {{ user.user.username|make_list|first|upper }}
+                            </div>
+                            <span class="username">{{ user.user.username }}</span>
+                        </div>
+                    </td>
 
+                    <!-- Logs Column -->
+                    <td style="text-align: center;">
+                        <span class="stat-label">Total Logs</span>
+                        {{ user.log_count }}
+                    </td>
+
+                    <!-- CO2 Column -->
+                    <td style="text-align: center;">
+                        <span class="stat-label">CO₂ Saved</span>
+                        {{ user.total_co2 }} <span style="font-size: 0.8em; color: #888;">kg</span>
+                    </td>
+
+                    <!-- Score Column -->
+                    <td style="text-align: right;">
+                        <span class="stat-label">Total Score</span>
+                        <span class="score-cell">{{ user.score }}</span>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
-    {% else %}
-        <div class="no-data">No user data available yet. Start logging your activities!</div>
-    {% endif %}
+        {% else %}
+            <div class="no-data">
+                <h3>No records found</h3>
+                <p>Start logging activities to see your name here!</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
 {% endblock %}
