@@ -50,6 +50,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'tracker',
+    
+    # Allauth core
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # Google provider
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +68,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    # REQUIRED FOR DJANGO-ALLAUTH
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+
 
 ROOT_URLCONF = 'carbon_tracker.urls'
 
@@ -102,6 +122,10 @@ DATABASES = {
 }
 
 
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 # Password validation
@@ -166,6 +190,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/users/login/'           # Redirects here when login is required 
 
-
+SITE_ID = 1
 LOGIN_REDIRECT_URL = 'dashboard'  # Go to the dashboard page after login
 LOGOUT_REDIRECT_URL = 'home'      # Go to the homepage after logout

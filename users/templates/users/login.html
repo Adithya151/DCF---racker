@@ -76,11 +76,21 @@
 
                 <!-- Social Login -->
                 <div class="mt-8">
-                    <div class="relative flex py-2 items-center"><div class="flex-grow border-t border-slate-600"></div><span class="flex-shrink mx-4 text-slate-500 text-sm">Or continue with</span><div class="flex-grow border-t border-slate-600"></div></div>
-                    <a href="#" class="mt-4 w-full flex items-center justify-center py-3 px-4 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 hover:border-slate-500 transition-all duration-300">
-                        <i class="fab fa-google text-lg mr-3"></i><span class="font-medium">Sign in with Google</span>
-                    </a>
-                </div>
+    <div class="relative flex py-2 items-center">
+        <div class="flex-grow border-t border-slate-600"></div>
+        <span class="flex-shrink mx-4 text-slate-500 text-sm">Or continue with</span>
+        <div class="flex-grow border-t border-slate-600"></div>
+    </div>
+
+    <a href="/accounts/google/login/" 
+       class="mt-4 w-full flex items-center justify-center py-3 px-4 
+              border border-slate-600 rounded-lg text-slate-300 
+              hover:bg-slate-700 hover:border-slate-500 transition-all duration-300">
+        <i class="fab fa-google text-lg mr-3"></i>
+        <span class="font-medium">Sign in with Google</span>
+    </a>
+</div>
+
 
                 <p class="text-sm text-center text-slate-400 mt-4">
                     <a href="{% url 'forgot_password' %}" class="font-medium text-emerald-400 hover:text-emerald-300 hover:underline">

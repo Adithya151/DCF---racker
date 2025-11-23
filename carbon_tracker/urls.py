@@ -22,5 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('tracker.urls')),  # Include URLs from the tracker app
     path('users/', include('users.urls')),
-    path("chatbot/",chatbot, name="chatbot")
+    path("chatbot/",chatbot, name="chatbot"),
+    
+    path('accounts/', include('allauth.urls')),
+
 ]
