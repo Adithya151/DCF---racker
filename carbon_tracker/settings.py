@@ -30,7 +30,7 @@ from decouple import config
 
 ALLOWED_HOSTS = [
     'digita-co2-footprint.onrender.com',
-    
+    'dcf-racker-2-jniu.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
