@@ -117,9 +117,20 @@ DATABASES = {
         'USER': config("DB_USER"),
         'PASSWORD': config("DB_PASSWORD"),
         'HOST': config("DB_HOST"),
-        'PORT': config("DB_PORT", cast=int),  # PORT should be an integer
+        'PORT': config("DB_PORT", cast=int),
+
+        # IMPORTANT FOR RAILWAY
+        'OPTIONS': {
+            'ssl': {'ca': '/etc/ssl/certs/ca-certificates.crt'},
+            'connect_timeout': 10,
+            'autocommit': True,
+        },
     }
 }
+
+# Avoid dead connections on Railway
+CONN_MAX_AGE = 60    # reconnect every 60 seconds
+
 
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
